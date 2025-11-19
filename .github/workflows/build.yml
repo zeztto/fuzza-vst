@@ -14,9 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install CMake
-      run: brew install cmake
-      
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release
       

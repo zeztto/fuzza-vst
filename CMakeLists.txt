@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(juce)
 
 # Create the plugin target
 juce_add_plugin(Fuzza
-    COMPANY_NAME "Antigravity"
+    COMPANY_NAME "h4ppy Labs"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE

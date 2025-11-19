@@ -5,6 +5,37 @@ All notable changes to Fuzza VST will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2025-11-19
+
+### Changed
+- **UI Complete Redesign**: Major visual and layout improvements
+  - **Unified Grid System**: All buttons and knobs aligned to 3-column grid (520×570px)
+  - **Modular Knob Boxes**: Each knob (GAIN/MIX/GATE) enclosed in subtle rounded box with glow effect
+  - **Larger Typography**:
+    - Logo "FUZZA": 48px bold
+    - Subtitle: 16px
+    - Knob labels: 18px bold
+    - Section labels: 14px bold
+  - **Enhanced Spacing**: Uniform 20px spacing between all columns, optimized vertical spacing
+  - **Cleaner Knob Values**: Removed text box borders, values displayed cleanly below knobs
+  - **Professional Layout**: Balanced spacing throughout (25px margins, consistent row heights)
+
+### Added
+- **Custom App Icon**: Added FUZZA branded icon for macOS (.icns) and Windows (.ico)
+  - Icon automatically embedded in Standalone, AU, and VST3 formats
+
+### Fixed
+- Knob value display no longer overlapped by bypass button
+- All UI elements properly aligned to unified grid
+- Improved readability with larger fonts
+- Better visual hierarchy and spacing
+
+### Technical
+- Icon resources: `Resources/icon.png` (1024×1024)
+- CMakeLists.txt: Added `ICON_BIG` and `ICON_SMALL` parameters
+- Grid system: `columnWidth = (width - 40) / 3`, `columnSpacing = 20px`
+- Window size: 520×570px for optimal balance
+
 ## [0.3.1] - 2025-11-19
 
 ### Changed

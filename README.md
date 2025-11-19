@@ -2,6 +2,9 @@
 
 JUCE와 CMake로 제작된 일렉트릭 기타용 Fuzz 디스토션 플러그인입니다.
 
+![Version](https://img.shields.io/badge/version-0.3.2-orange)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)
+
 ## 주요 기능
 
 ### 컨트롤 (3개 노브 + 6개 버튼)

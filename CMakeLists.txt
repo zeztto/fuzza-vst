@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(Fuzza VERSION 0.3.1)
+project(Fuzza VERSION 0.3.2)
 
 # Add JUCE
 include(FetchContent)
@@ -24,6 +24,8 @@ juce_add_plugin(Fuzza
     PLUGIN_CODE Fuzz
     FORMATS AU VST3 Standalone
     PRODUCT_NAME "Fuzza"
+    ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.png"
+    ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.png"
 )
 
 # Add source files

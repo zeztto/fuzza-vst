@@ -14,24 +14,30 @@ public:
 private:
   FuzzaAudioProcessor &audioProcessor;
 
-  // Knobs
+  // Knobs (3x instead of 4)
   juce::Slider gainSlider;
-  juce::Slider toneSlider;
   juce::Slider mixSlider;
   juce::Slider gateSlider;
 
   // Labels
   juce::Label gainLabel;
-  juce::Label toneLabel;
   juce::Label mixLabel;
   juce::Label gateLabel;
 
   // Bypass footswitch button (pedal style)
   juce::TextButton bypassButton;
 
-  // Clipping mode selector
-  juce::ComboBox clipModeSelector;
-  juce::Label clipModeLabel;
+  // Tone preset buttons (3-way toggle)
+  juce::TextButton toneWarmButton;
+  juce::TextButton toneBalancedButton;
+  juce::TextButton toneBrightButton;
+  juce::Label toneLabel;
+
+  // Clipping mode buttons (3-way toggle)
+  juce::TextButton clipHardButton;
+  juce::TextButton clipSoftButton;
+  juce::TextButton clipAsymButton;
+  juce::Label clipLabel;
 
   // Attachments
   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
@@ -39,13 +45,13 @@ private:
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gainAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-      toneAttachment;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       mixAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gateAttachment;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
-      clipModeAttachment;
+
+  // Helper methods
+  void updateToneButtons(int selectedPreset);
+  void updateClipButtons(int selectedMode);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FuzzaAudioProcessorEditor)
 };

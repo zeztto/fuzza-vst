@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(Fuzza VERSION 0.3.0)
+project(Fuzza VERSION 0.3.1)
 
 # Add JUCE
 include(FetchContent)

@@ -24,11 +24,10 @@ FuzzaAudioProcessor::createParameterLayout() {
       juce::ParameterID{"GAIN", 1}, "Gain",
       juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f, 0.5f), 50.0f));
 
-  // Tone: Realistic fuzz pedal range (500Hz - 5000Hz)
-  // Higher values = brighter tone, lower values = darker/warmer tone
-  layout.add(std::make_unique<juce::AudioParameterFloat>(
-      juce::ParameterID{"TONE", 1}, "Tone",
-      juce::NormalisableRange<float>(500.0f, 5000.0f, 1.0f, 0.3f), 2500.0f));
+  // Tone Preset: 0 = Warm (800Hz), 1 = Balanced (2000Hz), 2 = Bright (4500Hz)
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      juce::ParameterID{"TONE_PRESET", 1}, "Tone Preset",
+      juce::StringArray{"Warm", "Balanced", "Bright"}, 1));
 
   // Mix: Dry/Wet blend (0% = dry, 100% = wet)
   layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -158,7 +157,7 @@ void FuzzaAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     return;
 
   auto gainParam = apvts.getRawParameterValue("GAIN")->load();
-  auto tone = apvts.getRawParameterValue("TONE")->load();
+  auto tonePreset = static_cast<int>(apvts.getRawParameterValue("TONE_PRESET")->load());
   auto mixParam = apvts.getRawParameterValue("MIX")->load() / 100.0f; // 0.0 ~ 1.0
   auto gateParam = apvts.getRawParameterValue("GATE")->load() / 100.0f; // 0.0 ~ 1.0
   auto clipMode = static_cast<int>(apvts.getRawParameterValue("CLIP_MODE")->load());
@@ -170,9 +169,17 @@ void FuzzaAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   // Gate threshold (0.0 = no gate, 0.1 = aggressive)
   float gateThreshold = gateParam * 0.1f;
 
+  // Tone preset mapping: Warm (800Hz), Balanced (2000Hz), Bright (4500Hz)
+  float toneFrequency = 2000.0f; // Default
+  switch (tonePreset) {
+    case 0: toneFrequency = 800.0f; break;   // Warm
+    case 1: toneFrequency = 2000.0f; break;  // Balanced
+    case 2: toneFrequency = 4500.0f; break;  // Bright
+  }
+
   // Update tone filter cutoff frequency
-  toneFilterLeft.setCutoffFrequency(tone);
-  toneFilterRight.setCutoffFrequency(tone);
+  toneFilterLeft.setCutoffFrequency(toneFrequency);
+  toneFilterRight.setCutoffFrequency(toneFrequency);
 
   // Fuzz Algorithm with Mix, Gate, and Multiple Clipping Modes
   for (int channel = 0; channel < totalNumInputChannels; ++channel) {

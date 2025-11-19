@@ -1,0 +1,21 @@
+# Fuzza VST App Icon
+
+For now, JUCE will use a default icon. 
+To add a custom icon later:
+
+1. Create a 512x512 PNG image with:
+   - Dark grey gradient background (#1a1a1a to #2d2d2d)
+   - Large orange "F" letter (#ff9500)
+   - Metallic border (#555555)
+   - Corner screws for pedal effect
+
+2. Add to CMakeLists.txt:
+   ICON_BIG Resources/icon.png
+
+3. Rebuild project
+
+For macOS .icns:
+   iconutil -c icns icon.iconset
+
+For Windows .ico:
+   Use online converter or ImageMagick

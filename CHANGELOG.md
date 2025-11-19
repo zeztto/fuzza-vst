@@ -5,6 +5,35 @@ All notable changes to Fuzza VST will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-11-19
+
+### Changed
+- **Tone Knob → 3 Preset Buttons**: Replaced continuous tone knob with 3 preset buttons
+  - **WARM** (800Hz): Dark, warm tone for thick fuzz
+  - **BALANCED** (2000Hz): Versatile, balanced tone (default)
+  - **BRIGHT** (4500Hz): Cutting, bright tone for solos
+- **Clipping Dropdown → 3 Toggle Buttons**: Replaced dropdown with dedicated buttons
+  - **HARD**: Classic hard clipping
+  - **SOFT**: Smooth tanh saturation
+  - **ASYM**: Asymmetric vintage clipping
+- **Knob Count**: 4 knobs → 3 knobs (Gain, Mix, Gate)
+- **UI Layout Improved**:
+  - Tone preset buttons (top row)
+  - Clipping mode buttons (second row)
+  - 3 knobs (third row)
+  - Bypass footswitch (bottom center)
+- **Window Height**: 400px → 420px for better spacing
+
+### Fixed
+- Clipping dropdown no longer overlaps knobs
+- Cleaner, more organized pedal interface
+- Better visual hierarchy
+
+### Technical
+- Tone presets implemented as Choice parameter with 3 options
+- Button-based UI instead of combo boxes for better UX
+- Preset mapping in processBlock: 0=800Hz, 1=2000Hz, 2=4500Hz
+
 ## [0.3.0] - 2025-11-19
 
 ### Added

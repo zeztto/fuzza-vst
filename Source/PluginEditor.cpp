@@ -4,9 +4,9 @@
 FuzzaAudioProcessorEditor::FuzzaAudioProcessorEditor(FuzzaAudioProcessor &p)
     : AudioProcessorEditor(&p), audioProcessor(p) {
 
-  // === KNOBS (4x rotary) ===
+  // === KNOBS (3x rotary) ===
   auto setupKnob = [this](juce::Slider& slider, juce::Label& label,
-                          const juce::String& labelText, const juce::String& paramID) {
+                          const juce::String& labelText) {
     slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
     slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colour(0xffff9500)); // Orange
@@ -18,45 +18,73 @@ FuzzaAudioProcessorEditor::FuzzaAudioProcessorEditor(FuzzaAudioProcessor &p)
     label.setText(labelText, juce::dontSendNotification);
     label.setJustificationType(juce::Justification::centred);
     label.setColour(juce::Label::textColourId, juce::Colours::white);
-    label.setFont(juce::Font(14.0f, juce::Font::bold));
+    label.setFont(juce::FontOptions(14.0f, juce::Font::bold));
     label.attachToComponent(&slider, false);
     addAndMakeVisible(label);
   };
 
-  setupKnob(gainSlider, gainLabel, "GAIN", "GAIN");
-  setupKnob(toneSlider, toneLabel, "TONE", "TONE");
-  setupKnob(mixSlider, mixLabel, "MIX", "MIX");
-  setupKnob(gateSlider, gateLabel, "GATE", "GATE");
+  setupKnob(gainSlider, gainLabel, "GAIN");
+  setupKnob(mixSlider, mixLabel, "MIX");
+  setupKnob(gateSlider, gateLabel, "GATE");
 
   gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.apvts, "GAIN", gainSlider);
-  toneAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-      audioProcessor.apvts, "TONE", toneSlider);
   mixAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.apvts, "MIX", mixSlider);
   gateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
       audioProcessor.apvts, "GATE", gateSlider);
 
-  // === CLIPPING MODE SELECTOR ===
-  clipModeSelector.addItem("Hard", 1);
-  clipModeSelector.addItem("Soft", 2);
-  clipModeSelector.addItem("Asymmetric", 3);
-  clipModeSelector.setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff2a2a2a));
-  clipModeSelector.setColour(juce::ComboBox::textColourId, juce::Colours::white);
-  clipModeSelector.setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff666666));
-  clipModeSelector.setColour(juce::ComboBox::arrowColourId, juce::Colours::orange);
-  addAndMakeVisible(clipModeSelector);
+  // === TONE PRESET BUTTONS ===
+  auto setupToneButton = [this](juce::TextButton& button, const juce::String& text, int preset) {
+    button.setButtonText(text);
+    button.setClickingTogglesState(false);
+    button.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3a3a3a));
+    button.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff9500)); // Orange when selected
+    button.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    button.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    button.onClick = [this, preset]() {
+      audioProcessor.apvts.getParameter("TONE_PRESET")->setValueNotifyingHost(preset / 2.0f);
+      updateToneButtons(preset);
+    };
+    addAndMakeVisible(button);
+  };
 
-  clipModeLabel.setText("CLIPPING", juce::dontSendNotification);
-  clipModeLabel.setJustificationType(juce::Justification::centred);
-  clipModeLabel.setColour(juce::Label::textColourId, juce::Colours::white);
-  clipModeLabel.setFont(juce::Font(12.0f, juce::Font::bold));
-  addAndMakeVisible(clipModeLabel);
+  setupToneButton(toneWarmButton, "WARM", 0);
+  setupToneButton(toneBalancedButton, "BALANCED", 1);
+  setupToneButton(toneBrightButton, "BRIGHT", 2);
 
-  clipModeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-      audioProcessor.apvts, "CLIP_MODE", clipModeSelector);
+  toneLabel.setText("TONE", juce::dontSendNotification);
+  toneLabel.setJustificationType(juce::Justification::centred);
+  toneLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+  toneLabel.setFont(juce::FontOptions(12.0f, juce::Font::bold));
+  addAndMakeVisible(toneLabel);
 
-  // === BYPASS FOOTSWITCH (Pedal Style) ===
+  // === CLIPPING MODE BUTTONS ===
+  auto setupClipButton = [this](juce::TextButton& button, const juce::String& text, int mode) {
+    button.setButtonText(text);
+    button.setClickingTogglesState(false);
+    button.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3a3a3a));
+    button.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff9500)); // Orange when selected
+    button.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    button.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    button.onClick = [this, mode]() {
+      audioProcessor.apvts.getParameter("CLIP_MODE")->setValueNotifyingHost(mode / 2.0f);
+      updateClipButtons(mode);
+    };
+    addAndMakeVisible(button);
+  };
+
+  setupClipButton(clipHardButton, "HARD", 0);
+  setupClipButton(clipSoftButton, "SOFT", 1);
+  setupClipButton(clipAsymButton, "ASYM", 2);
+
+  clipLabel.setText("CLIPPING", juce::dontSendNotification);
+  clipLabel.setJustificationType(juce::Justification::centred);
+  clipLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+  clipLabel.setFont(juce::FontOptions(12.0f, juce::Font::bold));
+  addAndMakeVisible(clipLabel);
+
+  // === BYPASS FOOTSWITCH ===
   bypassButton.setButtonText("BYPASS");
   bypassButton.setClickingTogglesState(true);
   bypassButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff333333));
@@ -68,10 +96,26 @@ FuzzaAudioProcessorEditor::FuzzaAudioProcessorEditor(FuzzaAudioProcessor &p)
   bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
       audioProcessor.apvts, "BYPASS", bypassButton);
 
-  setSize(500, 400);
+  // Initialize button states
+  updateToneButtons(1); // Balanced default
+  updateClipButtons(0); // Hard default
+
+  setSize(500, 420);
 }
 
 FuzzaAudioProcessorEditor::~FuzzaAudioProcessorEditor() {}
+
+void FuzzaAudioProcessorEditor::updateToneButtons(int selectedPreset) {
+  toneWarmButton.setToggleState(selectedPreset == 0, juce::dontSendNotification);
+  toneBalancedButton.setToggleState(selectedPreset == 1, juce::dontSendNotification);
+  toneBrightButton.setToggleState(selectedPreset == 2, juce::dontSendNotification);
+}
+
+void FuzzaAudioProcessorEditor::updateClipButtons(int selectedMode) {
+  clipHardButton.setToggleState(selectedMode == 0, juce::dontSendNotification);
+  clipSoftButton.setToggleState(selectedMode == 1, juce::dontSendNotification);
+  clipAsymButton.setToggleState(selectedMode == 2, juce::dontSendNotification);
+}
 
 void FuzzaAudioProcessorEditor::paint(juce::Graphics &g) {
   // Pedal enclosure background (dark grey with gradient)
@@ -90,11 +134,11 @@ void FuzzaAudioProcessorEditor::paint(juce::Graphics &g) {
   // Top logo area
   auto logoArea = bounds.removeFromTop(60);
   g.setColour(juce::Colours::white);
-  g.setFont(juce::Font(36.0f, juce::Font::bold));
+  g.setFont(juce::FontOptions(36.0f, juce::Font::bold));
   g.drawFittedText("FUZZA", logoArea, juce::Justification::centred, 1);
 
   // Subtitle
-  g.setFont(juce::Font(12.0f));
+  g.setFont(juce::FontOptions(12.0f));
   g.setColour(juce::Colour(0xffff9500)); // Orange
   g.drawFittedText("Modern Fuzz Pedal", logoArea.removeFromBottom(15),
                    juce::Justification::centred, 1);
@@ -118,25 +162,41 @@ void FuzzaAudioProcessorEditor::resized() {
 
   // Top: Logo area
   bounds.removeFromTop(60);
-  bounds.removeFromTop(10); // Spacing
+  bounds.removeFromTop(10);
 
-  // Clipping mode selector (top center)
-  auto clipArea = bounds.removeFromTop(30);
-  clipModeSelector.setBounds(clipArea.withSizeKeepingCentre(180, 25));
+  // Tone preset buttons row
+  auto toneRow = bounds.removeFromTop(50);
+  toneRow.removeFromTop(15); // Space for label
+  auto toneButtons = toneRow.removeFromTop(30);
+  int toneButtonWidth = toneButtons.getWidth() / 3;
+  toneWarmButton.setBounds(toneButtons.removeFromLeft(toneButtonWidth).reduced(5, 0));
+  toneBalancedButton.setBounds(toneButtons.removeFromLeft(toneButtonWidth).reduced(5, 0));
+  toneBrightButton.setBounds(toneButtons.removeFromLeft(toneButtonWidth).reduced(5, 0));
+
   bounds.removeFromTop(5);
 
-  // Knobs area (4 knobs in a row)
+  // Clipping mode buttons row
+  auto clipRow = bounds.removeFromTop(50);
+  clipRow.removeFromTop(15); // Space for label
+  auto clipButtons = clipRow.removeFromTop(30);
+  int clipButtonWidth = clipButtons.getWidth() / 3;
+  clipHardButton.setBounds(clipButtons.removeFromLeft(clipButtonWidth).reduced(5, 0));
+  clipSoftButton.setBounds(clipButtons.removeFromLeft(clipButtonWidth).reduced(5, 0));
+  clipAsymButton.setBounds(clipButtons.removeFromLeft(clipButtonWidth).reduced(5, 0));
+
+  bounds.removeFromTop(10);
+
+  // Knobs area (3 knobs in a row)
   auto knobArea = bounds.removeFromTop(140);
-  int knobWidth = knobArea.getWidth() / 4;
+  int knobWidth = knobArea.getWidth() / 3;
 
-  gainSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(15, 0));
-  toneSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(15, 0));
-  mixSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(15, 0));
-  gateSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(15, 0));
+  gainSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(20, 0));
+  mixSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(20, 0));
+  gateSlider.setBounds(knobArea.removeFromLeft(knobWidth).reduced(20, 0));
 
-  bounds.removeFromTop(20); // Spacing
+  bounds.removeFromTop(10);
 
-  // Bypass footswitch (bottom center, pedal style)
+  // Bypass footswitch (bottom center)
   auto bypassArea = bounds.removeFromBottom(60);
-  bypassButton.setBounds(bypassArea.withSizeKeepingCentre(100, 50));
+  bypassButton.setBounds(bypassArea.withSizeKeepingCentre(120, 50));
 }

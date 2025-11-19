@@ -20,11 +20,17 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
       
-    - name: Upload Artifact
+    - name: Upload VST3 Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Fuzza-macOS
+        name: Fuzza-macOS-VST3
         path: ~/Library/Audio/Plug-Ins/VST3/Fuzza.vst3
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fuzza-macOS-AU
+        path: ~/Library/Audio/Plug-Ins/Components/Fuzza.component
 
   build_windows:
     name: Build Windows

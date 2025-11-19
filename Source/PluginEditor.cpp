@@ -68,7 +68,11 @@ FuzzaAudioProcessorEditor::FuzzaAudioProcessorEditor(FuzzaAudioProcessor &p)
     button.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
     button.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
     button.onClick = [this, mode]() {
-      audioProcessor.apvts.getParameter("CLIP_MODE")->setValueNotifyingHost(mode / 2.0f);
+      // Directly set the choice index (0, 1, or 2)
+      auto* param = dynamic_cast<juce::AudioParameterChoice*>(audioProcessor.apvts.getParameter("CLIP_MODE"));
+      if (param) {
+        *param = mode;
+      }
       updateClipButtons(mode);
     };
     addAndMakeVisible(button);

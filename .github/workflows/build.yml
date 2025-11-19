@@ -1,0 +1,49 @@
+name: Build VST3
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build_macos:
+    name: Build macOS
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install CMake
+      run: brew install cmake
+      
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release
+      
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fuzza-macOS
+        path: ~/Library/Audio/Plug-Ins/VST3/Fuzza.vst3
+
+  build_windows:
+    name: Build Windows
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release
+      
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fuzza-Windows
+        path: build/Fuzza_artefacts/Release/VST3/Fuzza.vst3

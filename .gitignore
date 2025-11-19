@@ -1,0 +1,21 @@
+# Build directories
+build/
+Builds/
+JuceLibraryCode/
+
+# IDEs
+.vscode/
+.idea/
+*.xcodeproj/
+*.xcworkspace/
+*.sln
+*.vcxproj
+*.vcxproj.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VST
+*.vst3
+*.component

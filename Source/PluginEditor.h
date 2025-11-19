@@ -14,20 +14,19 @@ public:
 private:
   FuzzaAudioProcessor &audioProcessor;
 
+  juce::ToggleButton bypassButton;
   juce::Slider gainSlider;
   juce::Slider toneSlider;
-  juce::Slider volumeSlider;
 
   juce::Label gainLabel;
   juce::Label toneLabel;
-  juce::Label volumeLabel;
 
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
+      bypassAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       gainAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
       toneAttachment;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
-      volumeAttachment;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FuzzaAudioProcessorEditor)
 };

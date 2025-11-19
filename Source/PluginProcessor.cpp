@@ -17,17 +17,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout
 FuzzaAudioProcessor::createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+  layout.add(std::make_unique<juce::AudioParameterBool>(
+      juce::ParameterID{"BYPASS", 1}, "Bypass", false));
+
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       juce::ParameterID{"GAIN", 1}, "Gain",
       juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f, 0.5f), 50.0f));
 
+  // Tone: Realistic fuzz pedal range (500Hz - 5000Hz)
+  // Higher values = brighter tone, lower values = darker/warmer tone
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       juce::ParameterID{"TONE", 1}, "Tone",
-      juce::NormalisableRange<float>(100.0f, 20000.0f, 1.0f, 0.3f), 5000.0f));
-
-  layout.add(std::make_unique<juce::AudioParameterFloat>(
-      juce::ParameterID{"VOLUME", 1}, "Volume",
-      juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
+      juce::NormalisableRange<float>(500.0f, 5000.0f, 1.0f, 0.3f), 2500.0f));
 
   return layout;
 }
@@ -79,8 +80,16 @@ void FuzzaAudioProcessor::changeProgramName(int index,
 
 void FuzzaAudioProcessor::prepareToPlay(double sampleRate,
                                         int samplesPerBlock) {
-  // Use this method as the place to do any pre-playback
-  // initialisation that you need..
+  // Initialize tone filters (low-pass filters)
+  toneFilterLeft.reset();
+  toneFilterRight.reset();
+
+  toneFilterLeft.prepare({sampleRate, (juce::uint32)samplesPerBlock, 1});
+  toneFilterRight.prepare({sampleRate, (juce::uint32)samplesPerBlock, 1});
+
+  // Set filter type to low-pass
+  toneFilterLeft.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+  toneFilterRight.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
 }
 
 void FuzzaAudioProcessor::releaseResources() {
@@ -126,11 +135,27 @@ void FuzzaAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
 
-  auto gain = apvts.getRawParameterValue("GAIN")->load();
-  auto volume = apvts.getRawParameterValue("VOLUME")->load();
-  // Tone is not implemented yet in DSP, just a placeholder parameter
+  // Check bypass state
+  auto bypass = apvts.getRawParameterValue("BYPASS")->load() > 0.5f;
 
-  // Simple Fuzz Algorithm: Hard Clipping with Gain
+  // If bypassed, skip all processing
+  if (bypass)
+    return;
+
+  auto gainParam = apvts.getRawParameterValue("GAIN")->load();
+  auto tone = apvts.getRawParameterValue("TONE")->load();
+
+  // Auto-compensation algorithm
+  // Gain 0 = clean boost (+6dB)
+  // Gain increases = more distortion with automatic level compensation
+  float inputGain = juce::jmax(1.0f, gainParam);  // Minimum 1x (clean)
+  float makeupGain = 2.0f / std::sqrt(inputGain); // Sqrt-based compensation
+
+  // Update tone filter cutoff frequency
+  toneFilterLeft.setCutoffFrequency(tone);
+  toneFilterRight.setCutoffFrequency(tone);
+
+  // Fuzz Algorithm with Auto-Level Compensation
   for (int channel = 0; channel < totalNumInputChannels; ++channel) {
     auto *channelData = buffer.getWritePointer(channel);
 
@@ -138,16 +163,19 @@ void FuzzaAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       float in = channelData[sample];
 
       // Apply input gain
-      in *= gain;
+      in *= inputGain;
 
-      // Hard clipping (Fuzz)
-      if (in > 1.0f)
-        in = 1.0f;
-      else if (in < -1.0f)
-        in = -1.0f;
+      // Hard clipping (Fuzz distortion)
+      in = juce::jlimit(-1.0f, 1.0f, in);
 
-      // Apply output volume
-      channelData[sample] = in * volume;
+      // Apply tone filter (low-pass)
+      if (channel == 0)
+        in = toneFilterLeft.processSample(0, in);
+      else if (channel == 1)
+        in = toneFilterRight.processSample(0, in);
+
+      // Apply automatic makeup gain (keeps output level consistent)
+      channelData[sample] = in * makeupGain;
     }
   }
 }

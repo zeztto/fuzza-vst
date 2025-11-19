@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
 
 class FuzzaAudioProcessor  : public juce::AudioProcessor
 {
@@ -40,6 +41,10 @@ public:
 
 private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    // Tone filter (low-pass filter for each channel)
+    juce::dsp::StateVariableTPTFilter<float> toneFilterLeft;
+    juce::dsp::StateVariableTPTFilter<float> toneFilterRight;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FuzzaAudioProcessor)
 };

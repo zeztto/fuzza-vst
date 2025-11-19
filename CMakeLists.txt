@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(Fuzza VERSION 0.0.1)
+project(Fuzza VERSION 0.2.0)
 
 # Add JUCE
 include(FetchContent)
@@ -39,6 +39,7 @@ target_sources(Fuzza
 target_link_libraries(Fuzza
     PRIVATE
         juce::juce_audio_utils
+        juce::juce_dsp
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

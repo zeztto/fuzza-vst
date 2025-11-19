@@ -3,6 +3,17 @@
 
 FuzzaAudioProcessorEditor::FuzzaAudioProcessorEditor(FuzzaAudioProcessor &p)
     : AudioProcessorEditor(&p), audioProcessor(p) {
+  // Bypass Button
+  bypassButton.setButtonText("Bypass");
+  bypassButton.setColour(juce::ToggleButton::textColourId, juce::Colours::white);
+  bypassButton.setColour(juce::ToggleButton::tickColourId, juce::Colours::red);
+  bypassButton.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::grey);
+  addAndMakeVisible(bypassButton);
+
+  bypassAttachment =
+      std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+          audioProcessor.apvts, "BYPASS", bypassButton);
+
   // Gain Slider
   gainSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
   gainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
@@ -31,20 +42,6 @@ FuzzaAudioProcessorEditor::FuzzaAudioProcessorEditor(FuzzaAudioProcessor &p)
       std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
           audioProcessor.apvts, "TONE", toneSlider);
 
-  // Volume Slider
-  volumeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  volumeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
-  addAndMakeVisible(volumeSlider);
-
-  volumeLabel.setText("Volume", juce::dontSendNotification);
-  volumeLabel.setJustificationType(juce::Justification::centred);
-  volumeLabel.attachToComponent(&volumeSlider, false);
-  addAndMakeVisible(volumeLabel);
-
-  volumeAttachment =
-      std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-          audioProcessor.apvts, "VOLUME", volumeSlider);
-
   setSize(400, 300);
 }
 
@@ -60,10 +57,16 @@ void FuzzaAudioProcessorEditor::paint(juce::Graphics &g) {
 }
 
 void FuzzaAudioProcessorEditor::resized() {
-  auto area = getLocalBounds().removeFromBottom(200);
-  int dialWidth = area.getWidth() / 3;
+  auto bounds = getLocalBounds();
+
+  // Bypass button at the top right
+  auto topArea = bounds.removeFromTop(50);
+  bypassButton.setBounds(topArea.removeFromRight(100).reduced(10));
+
+  // Two sliders at the bottom (Gain and Tone only)
+  auto area = bounds.removeFromBottom(200);
+  int dialWidth = area.getWidth() / 2;
 
   gainSlider.setBounds(area.removeFromLeft(dialWidth).reduced(10));
   toneSlider.setBounds(area.removeFromLeft(dialWidth).reduced(10));
-  volumeSlider.setBounds(area.removeFromLeft(dialWidth).reduced(10));
 }

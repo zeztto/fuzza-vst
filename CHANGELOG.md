@@ -5,6 +5,24 @@ All notable changes to Fuzza VST will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2025-11-19
+
+### Added
+- **Dual-Stage Noise Reduction**: Advanced noise control system
+  - **Input Gate**: Tight, fast-acting gate at the input stage to remove source noise
+  - **Output Suppressor**: Smooth, sustain-preserving suppressor at the output stage
+
+### Improved
+- **Gate Performance**:
+  - Fixed clicking/chattering artifacts using Envelope Follower (Attack/Release)
+  - Gate now works correctly even with Mix 0 (Clean) or Gain 0
+  - Preserves sustain while effectively eliminating high-gain noise
+
+### Technical
+- **Input Gate**: Attack 5ms, Release 50ms (Pre-Distortion)
+- **Output Suppressor**: Attack 20ms, Release 500ms (Post-Mix)
+- **Signal Flow**: Input -> Input Gate -> ... -> Mix -> Output Suppressor -> Output
+
 ## [0.3.2] - 2025-11-19
 
 ### Changed

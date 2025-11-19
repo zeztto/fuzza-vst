@@ -5,6 +5,41 @@ All notable changes to Fuzza VST will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-11-19
+
+### Added
+- **Mix (Dry/Wet) Control**: Blend clean and fuzzed signals for parallel processing (0-100%)
+- **Gate (Noise Gate)**: Threshold-based noise gate to eliminate unwanted noise and feedback (0-100%)
+- **Clipping Mode Selector**: Choose between 3 distortion algorithms
+  - **Hard**: Classic hard clipping (±1.0) - aggressive fuzz
+  - **Soft**: Smooth tanh clipping - warm, tube-like saturation
+  - **Asymmetric**: Vintage-style asymmetric clipping - unique character
+- **Professional Pedal-Style GUI**:
+  - Dark grey metallic enclosure with gradient
+  - 4 orange-accented rotary knobs (Gain, Tone, Mix, Gate)
+  - Realistic corner screws
+  - Bottom-centered bypass footswitch (red when active)
+  - Clean, modern aesthetic
+
+### Changed
+- **GUI Complete Redesign**: From basic interface to realistic guitar pedal look
+- **Window Size**: 400x300 → 500x400 pixels (more spacious layout)
+- **Bypass Button**: Moved from top-right toggle to bottom-center footswitch (pedal authentic)
+- **Color Scheme**: Black background → Professional grey gradient with orange accents
+- **Knob Layout**: 2-knob horizontal → 4-knob horizontal array
+
+### Improved
+- Enhanced versatility with mix control for subtle to extreme effects
+- Professional appearance matching real hardware pedals
+- Better noise performance with integrated gate
+- Three distinct tonal characters via clipping modes
+
+### Technical
+- Dry signal preservation for parallel processing
+- Gate threshold mapping: 0-100% UI → 0-0.1 internal threshold
+- Clipping mode implemented as ComboBox with 3 choices
+- Lambda function for knob setup (cleaner code)
+
 ## [0.2.0] - 2025-11-19
 
 ### Added

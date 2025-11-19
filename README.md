@@ -4,7 +4,7 @@ JUCE와 CMake로 제작된 일렉트릭 기타용 Fuzz 디스토션 플러그인
 
 ## 주요 기능
 
-### 컨트롤
+### 컨트롤 (4개 노브 + Clipping 모드)
 - **Gain (0-100)**: Fuzz 디스토션의 양을 조절합니다
   - **0**: 클린 부스트 모드 (+6dB, 디스토션 없음)
   - **1-50**: 빈티지 퍼즈 사운드 (중간 디스토션)
@@ -16,12 +16,30 @@ JUCE와 CMake로 제작된 일렉트릭 기타용 Fuzz 디스토션 플러그인
   - **2500Hz**: 균형잡힌 톤 (기본값)
   - **5000Hz**: 밝고 날카로운 톤 (고주파 통과)
 
-- **Bypass**: 이펙트를 켜고 끌 수 있습니다 (트루 바이패스)
+- **Mix (0-100%)**: 원음과 퍼즈 신호의 블렌드 비율 (Dry/Wet)
+  - **0%**: 완전한 원음 (이펙트 없음)
+  - **50%**: 원음과 퍼즈 50:50 블렌드 (Parallel Processing)
+  - **100%**: 완전한 퍼즈 사운드 (기본값)
+
+- **Gate (0-100%)**: 노이즈 게이트 강도
+  - **0%**: 게이트 꺼짐 (기본값)
+  - **1-30%**: 부드러운 노이즈 제거
+  - **30-100%**: 강한 게이트 (스타카토 효과)
+
+- **Clipping Mode**: 디스토션 알고리즘 선택
+  - **Hard**: 클래식 하드 클리핑 - 공격적인 퍼즈
+  - **Soft**: 부드러운 tanh 클리핑 - 따뜻한 튜브 사운드
+  - **Asymmetric**: 비대칭 클리핑 - 빈티지 캐릭터
+
+- **Bypass Footswitch**: 하단 중앙의 페달 스타일 버튼 (트루 바이패스)
 
 ### 기술적 특징
-- **Hard Clipping Distortion**: 클래식한 퍼즈 알고리즘
+- **Multiple Clipping Algorithms**: Hard/Soft/Asymmetric 클리핑
+- **Parallel Processing**: Mix 컨트롤을 통한 Dry/Wet 블렌딩
+- **Noise Gate**: 불필요한 노이즈 제거
 - **Low-Pass Tone Filter**: JUCE DSP 기반 고품질 필터
-- **Auto-Level Compensation**: 지각적으로 자연스러운 sqrt 기반 자동 레벨 조정
+- **Auto-Level Compensation**: sqrt 기반 자동 레벨 조정
+- **Professional Pedal-Style GUI**: 실제 하드웨어 페달 같은 UI
 - **Zero Latency**: 실시간 처리, 지연 없음
 
 ## 빌드 방법

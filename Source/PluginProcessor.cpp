@@ -104,6 +104,12 @@ void FuzzaAudioProcessor::prepareToPlay(double sampleRate,
   // Set filter type to low-pass
   toneFilterLeft.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
   toneFilterRight.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+
+  // Initialize gate gains
+  inputGateGainLeft = 0.0f;
+  inputGateGainRight = 0.0f;
+  outputGateGainLeft = 0.0f;
+  outputGateGainRight = 0.0f;
 }
 
 void FuzzaAudioProcessor::releaseResources() {
@@ -185,47 +191,92 @@ void FuzzaAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   for (int channel = 0; channel < totalNumInputChannels; ++channel) {
     auto *channelData = buffer.getWritePointer(channel);
 
+    // Gate Parameters
+    // Input Gate: Tight and Fast (removes noise before distortion)
+    const float inputAttack = 0.005f; // 5ms
+    const float inputRelease = 0.05f; // 50ms
+    const float alphaInputAttack = std::exp(-1.0f / (getSampleRate() * inputAttack));
+    const float alphaInputRelease = std::exp(-1.0f / (getSampleRate() * inputRelease));
+
+    // Output Suppressor: Smooth and Long (preserves sustain)
+    const float outputAttack = 0.02f;  // 20ms
+    const float outputRelease = 0.5f;  // 500ms
+    const float alphaOutputAttack = std::exp(-1.0f / (getSampleRate() * outputAttack));
+    const float alphaOutputRelease = std::exp(-1.0f / (getSampleRate() * outputRelease));
+
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-      float dry = channelData[sample]; // Store dry signal
-      float wet = dry;
+      float input = channelData[sample];
 
-      // Gate: Kill signal below threshold
-      if (std::abs(wet) < gateThreshold) {
-        wet = 0.0f;
+      // --- Stage 1: Input Gate (Tight) ---
+      float inputAbs = std::abs(input);
+      float inputTargetGain = (inputAbs > gateThreshold) ? 1.0f : 0.0f;
+      
+      float& currentInputGateGain = (channel == 0) ? inputGateGainLeft : inputGateGainRight;
+      
+      if (inputTargetGain > currentInputGateGain) {
+          currentInputGateGain = (currentInputGateGain * alphaInputAttack) + (inputTargetGain * (1.0f - alphaInputAttack));
       } else {
-        // Apply input gain
-        wet *= inputGain;
-
-        // Clipping modes
-        switch (clipMode) {
-          case 0: // Hard clipping
-            wet = juce::jlimit(-1.0f, 1.0f, wet);
-            break;
-
-          case 1: // Soft clipping (tanh)
-            wet = std::tanh(wet);
-            break;
-
-          case 2: // Asymmetric clipping (vintage style)
-            if (wet > 0.0f)
-              wet = std::tanh(wet * 1.5f);
-            else
-              wet = juce::jlimit(-1.0f, 1.0f, wet);
-            break;
-        }
-
-        // Apply tone filter (low-pass)
-        if (channel == 0)
-          wet = toneFilterLeft.processSample(0, wet);
-        else if (channel == 1)
-          wet = toneFilterRight.processSample(0, wet);
-
-        // Apply automatic makeup gain
-        wet *= makeupGain;
+          currentInputGateGain = (currentInputGateGain * alphaInputRelease) + (inputTargetGain * (1.0f - alphaInputRelease));
       }
 
+      // Apply Input Gate
+      input *= currentInputGateGain;
+
+      float dry = input; 
+      float wet = dry;
+
+      // Apply input gain
+      wet *= inputGain;
+
+      // Clipping modes
+      switch (clipMode) {
+        case 0: // Hard clipping
+          wet = juce::jlimit(-1.0f, 1.0f, wet);
+          break;
+
+        case 1: // Soft clipping (tanh)
+          wet = std::tanh(wet);
+          break;
+
+        case 2: // Asymmetric clipping (vintage style)
+          if (wet > 0.0f)
+            wet = std::tanh(wet * 1.5f);
+          else
+            wet = juce::jlimit(-1.0f, 1.0f, wet);
+          break;
+      }
+
+      // Apply tone filter (low-pass)
+      if (channel == 0)
+        wet = toneFilterLeft.processSample(0, wet);
+      else if (channel == 1)
+        wet = toneFilterRight.processSample(0, wet);
+
+      // Apply automatic makeup gain
+      wet *= makeupGain;
+
       // Mix dry and wet signals
-      channelData[sample] = (dry * (1.0f - mixParam)) + (wet * mixParam);
+      float mixed = (dry * (1.0f - mixParam)) + (wet * mixParam);
+
+      // --- Stage 2: Output Suppressor (Smooth) ---
+      // Use a lower relative threshold for the output to allow tails to fade out naturally
+      // Since the signal might be boosted, we scale the threshold slightly or keep it same but rely on long release
+      float outputThreshold = gateThreshold * 0.5f; // Half threshold for output to keep tails
+      float outputAbs = std::abs(mixed);
+      float outputTargetGain = (outputAbs > outputThreshold) ? 1.0f : 0.0f;
+      
+      float& currentOutputGateGain = (channel == 0) ? outputGateGainLeft : outputGateGainRight;
+      
+      if (outputTargetGain > currentOutputGateGain) {
+          currentOutputGateGain = (currentOutputGateGain * alphaOutputAttack) + (outputTargetGain * (1.0f - alphaOutputAttack));
+      } else {
+          currentOutputGateGain = (currentOutputGateGain * alphaOutputRelease) + (outputTargetGain * (1.0f - alphaOutputRelease));
+      }
+
+      // Apply Output Suppressor
+      mixed *= currentOutputGateGain;
+
+      channelData[sample] = mixed;
     }
   }
 }

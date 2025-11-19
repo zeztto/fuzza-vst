@@ -23,8 +23,9 @@ JUCE와 CMake로 제작된 일렉트릭 기타용 Fuzz 디스토션 플러그인
 
 - **Gate (0-100%)**: 노이즈 게이트 강도
   - **0%**: 게이트 꺼짐 (기본값)
-  - **1-30%**: 부드러운 노이즈 제거
+  - **1-30%**: 부드러운 노이즈 제거 (Dual-Stage)
   - **30-100%**: 강한 게이트 (스타카토 효과)
+  - **Dual-Stage System**: 입력단(Input Gate)과 출력단(Output Suppressor)이 동시에 작동하여 서스테인을 유지하며 노이즈를 제거합니다.
 
 #### Tone 프리셋 (Preset Buttons)
 - **WARM** (800Hz): 어둡고 두꺼운 톤 - 리듬 기타, 블루스
@@ -43,7 +44,9 @@ JUCE와 CMake로 제작된 일렉트릭 기타용 Fuzz 디스토션 플러그인
 ### 기술적 특징
 - **Multiple Clipping Algorithms**: Hard/Soft/Asymmetric 클리핑
 - **Parallel Processing**: Mix 컨트롤을 통한 Dry/Wet 블렌딩
-- **Noise Gate**: 불필요한 노이즈 제거
+- **Dual-Stage Noise Reduction**:
+  - **Input Gate**: 빠른 Attack/Release로 소스 노이즈 차단
+  - **Output Suppressor**: 부드러운 감쇠로 서스테인 유지 및 하이게인 노이즈 억제
 - **Low-Pass Tone Filter**: JUCE DSP 기반 고품질 필터
 - **Auto-Level Compensation**: sqrt 기반 자동 레벨 조정
 - **Professional Pedal-Style GUI**: 실제 하드웨어 페달 같은 UI

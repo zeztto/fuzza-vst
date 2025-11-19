@@ -46,5 +46,14 @@ private:
     juce::dsp::StateVariableTPTFilter<float> toneFilterLeft;
     juce::dsp::StateVariableTPTFilter<float> toneFilterRight;
 
+    // Gate gain state for smoothing (Envelope Follower)
+    // Input Gate (Tight)
+    float inputGateGainLeft = 0.0f;
+    float inputGateGainRight = 0.0f;
+
+    // Output Suppressor (Smooth/Sustain)
+    float outputGateGainLeft = 0.0f;
+    float outputGateGainRight = 0.0f;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FuzzaAudioProcessor)
 };

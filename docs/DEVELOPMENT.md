@@ -12,7 +12,8 @@
 
 ### 신호 흐름 (Signal Flow)
 ```
-Input → Bypass Check → Gain → Hard Clipping → Tone Filter → Makeup Gain → Output
+Input → Input Gate → Gain → Hard Clipping → Tone Filter → Makeup Gain → Mix → Output Suppressor → Output
+
 ```
 
 ### DSP 구현 세부사항
@@ -20,6 +21,22 @@ Input → Bypass Check → Gain → Hard Clipping → Tone Filter → Makeup Gai
 #### 1. Bypass
 - Boolean 파라미터 (true/false)
 - True일 때 모든 처리를 건너뛰고 원본 신호 출력 (트루 바이패스)
+
+#### 2. Dual-Stage Noise Reduction
+단일 Gate 노브로 두 단계의 노이즈 제어를 수행합니다.
+
+**Stage 1: Input Gate (Pre-Distortion)**
+- **목적**: 기타 험 노이즈 등 소스 노이즈 제거
+- **위치**: 신호 처리 체인 최상단
+- **특성**: Fast Attack (5ms) / Fast Release (50ms)
+- **효과**: 연주 시작과 끝을 깔끔하게 처리
+
+**Stage 2: Output Suppressor (Post-Mix)**
+- **목적**: 하이게인 회로 노이즈 억제 및 서스테인 보존
+- **위치**: Mix 이후 최종 출력단
+- **특성**: Medium Attack (20ms) / Long Release (500ms)
+- **Threshold**: 입력단보다 50% 낮게 설정
+- **효과**: 자연스러운 페이드아웃과 긴 서스테인 확보
 
 #### 2. Gain & Auto-Level Compensation
 ```cpp

@@ -1,126 +1,126 @@
-# Changelog
+# 변경 기록 (Changelog)
 
-All notable changes to Fuzza VST will be documented in this file.
+Fuzza VST의 모든 주요 변경 사항은 이 파일에 기록됩니다.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+이 형식은 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)을 기반으로 하며,
+이 프로젝트는 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 준수합니다.
 
 ## [0.3.3] - 2025-11-19
 
-### Added
-- **Dual-Stage Noise Reduction**: Advanced noise control system
-  - **Input Gate**: Tight, fast-acting gate at the input stage to remove source noise
-  - **Output Suppressor**: Smooth, sustain-preserving suppressor at the output stage
+### 추가됨 (Added)
+- **이중 단계 노이즈 감소 (Dual-Stage Noise Reduction)**: 고급 노이즈 제어 시스템
+  - **입력 게이트 (Input Gate)**: 입력단에서 빠르게 작동하여 소스 노이즈를 제거하는 타이트한 게이트
+  - **출력 서프레서 (Output Suppressor)**: 출력단에서 부드럽게 작동하여 서스테인을 유지하는 서프레서
 
-### Improved
-- **Gate Performance**:
-  - Fixed clicking/chattering artifacts using Envelope Follower (Attack/Release)
-  - Gate now works correctly even with Mix 0 (Clean) or Gain 0
-  - Preserves sustain while effectively eliminating high-gain noise
+### 개선됨 (Improved)
+- **게이트 성능**:
+  - Envelope Follower (Attack/Release)를 사용하여 틱 잡음(Clicking) 및 채터링 현상 해결
+  - Mix 0 (Clean) 또는 Gain 0 상태에서도 게이트가 정상 작동하도록 개선
+  - 하이게인 노이즈를 효과적으로 제거하면서도 서스테인 유지
 
-### Technical
-- **Input Gate**: Attack 5ms, Release 50ms (Pre-Distortion)
-- **Output Suppressor**: Attack 20ms, Release 500ms (Post-Mix)
-- **Signal Flow**: Input -> Input Gate -> ... -> Mix -> Output Suppressor -> Output
+### 기술적 사항 (Technical)
+- **Input Gate**: Attack 5ms, Release 50ms (왜곡 전 단계)
+- **Output Suppressor**: Attack 20ms, Release 500ms (믹스 후 단계)
+- **신호 흐름**: Input -> Input Gate -> ... -> Mix -> Output Suppressor -> Output
 
 ## [0.3.2] - 2025-11-19
 
-### Changed
-- **UI Complete Redesign**: Major visual and layout improvements
-  - **Unified Grid System**: All buttons and knobs aligned to 3-column grid (520×570px)
-  - **Modular Knob Boxes**: Each knob (GAIN/MIX/GATE) enclosed in subtle rounded box with glow effect
-  - **Larger Typography**:
-    - Logo "FUZZA": 48px bold
-    - Subtitle: 16px
-    - Knob labels: 18px bold
-    - Section labels: 14px bold
-  - **Enhanced Spacing**: Uniform 20px spacing between all columns, optimized vertical spacing
-  - **Cleaner Knob Values**: Removed text box borders, values displayed cleanly below knobs
-  - **Professional Layout**: Balanced spacing throughout (25px margins, consistent row heights)
+### 변경됨 (Changed)
+- **UI 전체 리디자인**: 주요 시각적 요소 및 레이아웃 개선
+  - **통합 그리드 시스템**: 모든 버튼과 노브를 3열 그리드(520×570px)에 정렬
+  - **모듈형 노브 박스**: 각 노브(GAIN/MIX/GATE)를 은은한 발광 효과가 있는 둥근 박스로 감쌈
+  - **타이포그래피 확대**:
+    - 로고 "FUZZA": 48px 볼드
+    - 부제목: 16px
+    - 노브 라벨: 18px 볼드
+    - 섹션 라벨: 14px 볼드
+  - **여백 개선**: 모든 열 사이 20px 균일 간격, 수직 간격 최적화
+  - **깔끔한 노브 값 표시**: 텍스트 박스 테두리 제거, 노브 아래에 깔끔하게 값 표시
+  - **전문적인 레이아웃**: 전체적으로 균형 잡힌 간격 (25px 마진, 일관된 행 높이)
 
-### Added
-- **Custom App Icon**: Added FUZZA branded icon for macOS (.icns) and Windows (.ico)
-  - Icon automatically embedded in Standalone, AU, and VST3 formats
+### 추가됨 (Added)
+- **커스텀 앱 아이콘**: macOS (.icns) 및 Windows (.ico)용 FUZZA 브랜드 아이콘 추가
+  - Standalone, AU, VST3 포맷에 아이콘 자동 포함
 
-### Fixed
-- Knob value display no longer overlapped by bypass button
-- All UI elements properly aligned to unified grid
-- Improved readability with larger fonts
-- Better visual hierarchy and spacing
+### 수정됨 (Fixed)
+- 노브 값 표시가 바이패스 버튼에 가려지는 문제 해결
+- 모든 UI 요소가 통합 그리드에 맞춰 정렬됨
+- 글꼴 크기 확대로 가독성 개선
+- 시각적 계층 구조 및 여백 개선
 
-### Technical
-- Icon resources: `Resources/icon.png` (1024×1024)
-- CMakeLists.txt: Added `ICON_BIG` and `ICON_SMALL` parameters
-- Grid system: `columnWidth = (width - 40) / 3`, `columnSpacing = 20px`
-- Window size: 520×570px for optimal balance
+### 기술적 사항 (Technical)
+- 아이콘 리소스: `Resources/icon.png` (1024×1024)
+- CMakeLists.txt: `ICON_BIG` 및 `ICON_SMALL` 파라미터 추가
+- 그리드 시스템: `columnWidth = (width - 40) / 3`, `columnSpacing = 20px`
+- 창 크기: 520×570px로 최적화
 
 ## [0.3.1] - 2025-11-19
 
-### Changed
-- **Tone Knob → 3 Preset Buttons**: Replaced continuous tone knob with 3 preset buttons
-  - **WARM** (800Hz): Dark, warm tone for thick fuzz
-  - **BALANCED** (2000Hz): Versatile, balanced tone (default)
-  - **BRIGHT** (4500Hz): Cutting, bright tone for solos
-- **Clipping Dropdown → 3 Toggle Buttons**: Replaced dropdown with dedicated buttons
-  - **HARD**: Classic hard clipping
-  - **SOFT**: Smooth tanh saturation
-  - **ASYM**: Asymmetric vintage clipping
-- **Knob Count**: 4 knobs → 3 knobs (Gain, Mix, Gate)
-- **UI Layout Improved**:
-  - Tone preset buttons (top row)
-  - Clipping mode buttons (second row)
-  - 3 knobs (third row)
-  - Bypass footswitch (bottom center)
-- **Window Height**: 400px → 420px for better spacing
+### 변경됨 (Changed)
+- **Tone 노브 → 3 프리셋 버튼**: 연속적인 톤 노브를 3개의 프리셋 버튼으로 교체
+  - **WARM** (800Hz): 두껍고 어두운 톤 - 리듬 기타, 블루스
+  - **BALANCED** (2000Hz): 균형 잡힌 만능 톤 (기본값)
+  - **BRIGHT** (4500Hz): 날카롭고 밝은 톤 - 솔로
+- **클리핑 드롭다운 → 3 토글 버튼**: 드롭다운을 전용 버튼으로 교체
+  - **HARD**: 클래식 하드 클리핑
+  - **SOFT**: 부드러운 tanh 채도
+  - **ASYM**: 비대칭 빈티지 클리핑
+- **노브 개수**: 4개 → 3개 (Gain, Mix, Gate)
+- **UI 레이아웃 개선**:
+  - 톤 프리셋 버튼 (상단)
+  - 클리핑 모드 버튼 (중단)
+  - 3개 노브 (하단)
+  - 바이패스 풋스위치 (최하단 중앙)
+- **창 높이**: 400px → 420px로 조정
 
-### Fixed
-- Clipping dropdown no longer overlaps knobs
-- Cleaner, more organized pedal interface
-- Better visual hierarchy
+### 수정됨 (Fixed)
+- 클리핑 드롭다운이 노브를 가리는 문제 해결
+- 더 깔끔하고 정돈된 페달 인터페이스
+- 시각적 계층 구조 개선
 
-### Technical
-- Tone presets implemented as Choice parameter with 3 options
-- Button-based UI instead of combo boxes for better UX
-- Preset mapping in processBlock: 0=800Hz, 1=2000Hz, 2=4500Hz
+### 기술적 사항 (Technical)
+- 톤 프리셋을 3가지 옵션의 Choice 파라미터로 구현
+- UX 개선을 위해 콤보 박스 대신 버튼 기반 UI 적용
+- processBlock 내 프리셋 매핑: 0=800Hz, 1=2000Hz, 2=4500Hz
 
 ## [0.3.0] - 2025-11-19
 
-### Added
-- **Mix (Dry/Wet) Control**: Blend clean and fuzzed signals for parallel processing (0-100%)
-- **Gate (Noise Gate)**: Threshold-based noise gate to eliminate unwanted noise and feedback (0-100%)
-- **Clipping Mode Selector**: Choose between 3 distortion algorithms
-  - **Hard**: Classic hard clipping (±1.0) - aggressive fuzz
-  - **Soft**: Smooth tanh clipping - warm, tube-like saturation
-  - **Asymmetric**: Vintage-style asymmetric clipping - unique character
-- **Professional Pedal-Style GUI**:
-  - Dark grey metallic enclosure with gradient
-  - 4 orange-accented rotary knobs (Gain, Tone, Mix, Gate)
-  - Realistic corner screws
-  - Bottom-centered bypass footswitch (red when active)
-  - Clean, modern aesthetic
+### 추가됨 (Added)
+- **Mix (Dry/Wet) 컨트롤**: 병렬 처리를 위해 원음과 퍼즈 신호 블렌딩 (0-100%)
+- **Gate (노이즈 게이트)**: 불필요한 노이즈와 피드백을 제거하는 임계값 기반 게이트 (0-100%)
+- **클리핑 모드 선택기**: 3가지 디스토션 알고리즘 선택 가능
+  - **Hard**: 클래식 하드 클리핑 (±1.0) - 공격적인 퍼즈
+  - **Soft**: 부드러운 tanh 클리핑 - 따뜻한 튜브 질감
+  - **Asymmetric**: 빈티지 스타일 비대칭 클리핑 - 독특한 캐릭터
+- **전문적인 페달 스타일 GUI**:
+  - 그라데이션이 적용된 다크 그레이 메탈 인클로저
+  - 4개의 오렌지색 포인트 로터리 노브 (Gain, Tone, Mix, Gate)
+  - 사실적인 모서리 나사
+  - 하단 중앙 바이패스 풋스위치 (활성 시 빨간색)
+  - 깔끔하고 현대적인 미학
 
-### Changed
-- **GUI Complete Redesign**: From basic interface to realistic guitar pedal look
-- **Window Size**: 400x300 → 500x400 pixels (more spacious layout)
-- **Bypass Button**: Moved from top-right toggle to bottom-center footswitch (pedal authentic)
-- **Color Scheme**: Black background → Professional grey gradient with orange accents
-- **Knob Layout**: 2-knob horizontal → 4-knob horizontal array
+### 변경됨 (Changed)
+- **GUI 전체 리디자인**: 기본 인터페이스에서 사실적인 기타 페달 룩으로 변경
+- **창 크기**: 400x300 → 500x400 픽셀 (더 넓은 레이아웃)
+- **바이패스 버튼**: 우측 상단 토글에서 하단 중앙 풋스위치로 이동 (페달 고증)
+- **색상 테마**: 검정 배경 → 오렌지 포인트가 있는 전문적인 그레이 그라데이션
+- **노브 레이아웃**: 2노브 수평 → 4노브 수평 배열
 
-### Improved
-- Enhanced versatility with mix control for subtle to extreme effects
-- Professional appearance matching real hardware pedals
-- Better noise performance with integrated gate
-- Three distinct tonal characters via clipping modes
+### 개선됨 (Improved)
+- 믹스 컨트롤을 통한 미세한 톤부터 과격한 톤까지 범용성 증대
+- 실제 하드웨어 페달과 유사한 전문적인 외관
+- 통합 게이트로 노이즈 성능 개선
+- 클리핑 모드를 통한 3가지 고유한 톤 캐릭터 제공
 
-### Technical
-- Dry signal preservation for parallel processing
-- Gate threshold mapping: 0-100% UI → 0-0.1 internal threshold
-- Clipping mode implemented as ComboBox with 3 choices
-- Lambda function for knob setup (cleaner code)
+### 기술적 사항 (Technical)
+- 병렬 처리를 위한 Dry 신호 보존
+- 게이트 임계값 매핑: 0-100% UI → 0-0.1 내부 임계값
+- 클리핑 모드를 3가지 선택지의 ComboBox로 구현
+- 노브 설정을 위한 람다 함수 사용 (코드 정리)
 
 ## [0.2.0] - 2025-11-19
 
-### Added
+### 추가됨 (Added)
 - **Bypass 기능**: 이펙트를 켜고 끌 수 있는 토글 버튼 추가 (트루 바이패스)
 - **Tone 필터 DSP 구현**: 500Hz-5kHz low-pass 필터 (실제 퍼즈 페달 대역폭)
 - **자동 레벨 보상 알고리즘**: Gain이 높아져도 출력 레벨이 일정하게 유지
@@ -128,26 +128,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Gain 0에서 클린 부스트 모드 (+6dB)
 - **JUCE DSP 모듈 추가**: StateVariableTPTFilter 사용
 
-### Changed
+### 변경됨 (Changed)
 - **Tone 파라미터 범위 조정**: 100Hz-20kHz → 500Hz-5kHz (실제 퍼즈 페달 사양)
 - **Volume 노브 제거**: Gain과 통합하여 자동 레벨 보상으로 대체
 - **GUI 단순화**: 3개 노브 → 2개 노브 (Gain, Tone)
 - **Gain 기본값 변경**: 50.0 유지 (중간 퍼즈)
 - **Tone 기본값 변경**: 5000Hz → 2500Hz (더 균형잡힌 톤)
 
-### Improved
+### 개선됨 (Improved)
 - 더 직관적이고 단순한 사용자 인터페이스
 - 일관된 출력 레벨로 믹싱이 더 쉬워짐
 - 실제 퍼즈 페달에 가까운 톤 특성
 
-### Technical
+### 기술적 사항 (Technical)
 - DSP 알고리즘 최적화: Hard clipping → Tone filter → Makeup gain
 - CMakeLists.txt에 juce_dsp 모듈 링크 추가
 - 코드 리팩토링: 더 명확한 주석과 구조
 
 ## [0.0.1] - 2025-11-19
 
-### Added
+### 추가됨 (Added)
 - 초기 릴리즈
 - 기본 Fuzz 디스토션 이펙트 (Hard clipping)
 - Gain, Tone, Volume 파라미터
@@ -156,7 +156,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI/CD 파이프라인 (GitHub Actions)
 - 한글 문서 (README.md, DEVELOPMENT.md)
 
-### Features
+### 기능 (Features)
 - Hard clipping 기반 퍼즈 알고리즘
 - 3개 로터리 노브 GUI
 - Zero latency 실시간 처리
